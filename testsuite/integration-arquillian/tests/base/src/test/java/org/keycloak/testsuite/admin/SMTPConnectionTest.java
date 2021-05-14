@@ -38,7 +38,6 @@ import static org.junit.Assert.fail;
 import static org.keycloak.representations.idm.ComponentRepresentation.SECRET_VALUE;
 import org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude;
 import org.keycloak.testsuite.arquillian.annotation.AuthServerContainerExclude.AuthServer;
-import static org.keycloak.util.JsonSerialization.writeValueAsPrettyString;
 
 /**
  * @author <a href="mailto:bruno@abstractj.org">Bruno Oliveira</a>
@@ -139,6 +138,17 @@ public class SMTPConnectionTest extends AbstractKeycloakTest {
             realmRep.setSmtpServer(oldSmtp);
             realm.update(realmRep);
         }
+    }
+
+    //KEYCLOAK-16917
+    @Test
+    @AuthServerContainerExclude(AuthServer.REMOTE)
+    public void testStartTls() throws Exception {
+        greenMailRule.credentials("admin@localhost", "admin");
+        Response response = realm.testSMTPConnection(settings("127.0.0.1", "3465", "auto@keycloak.org", "true", "true", "true",
+                "admin@localhost", SMTP_PASSWORD));
+        assertStatus(response, 204);
+        assertMailReceived();
     }
 
     private void assertStatus(Response response, int status) {

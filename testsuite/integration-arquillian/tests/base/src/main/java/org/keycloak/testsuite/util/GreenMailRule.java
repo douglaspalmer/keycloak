@@ -17,14 +17,18 @@
 
 package org.keycloak.testsuite.util;
 
+import com.icegreen.greenmail.util.DummySSLServerSocketFactory;
+import com.icegreen.greenmail.util.DummySSLSocketFactory;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
+import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.rules.ExternalResource;
 import org.keycloak.models.RealmModel;
 
 import javax.mail.internet.MimeMessage;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.SocketException;
+import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,21 +39,14 @@ public class GreenMailRule extends ExternalResource {
 
     private GreenMail greenMail;
 
-    private int port = 3025;
-    private String host = "localhost";
-
     public GreenMailRule() {
-    }
-
-    public GreenMailRule(int port, String host) {
-        this.port = port;
-        this.host = host;
     }
 
     @Override
     protected void before() throws Throwable {
-        ServerSetup setup = new ServerSetup(port, host, "smtp");
-
+        ServerSetup[] setup = new ServerSetup[2];
+        setup[0] = ServerSetupTest.SMTP;
+        setup[1] = ServerSetupTest.SMTPS;
         greenMail = new GreenMail(setup);
         greenMail.start();
     }

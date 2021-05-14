@@ -185,7 +185,7 @@ public class DefaultEmailSenderProvider implements EmailSenderProvider {
         if (factory != null) {
             props.put("mail.smtp.ssl.socketFactory", factory);
             if (configurator.getProvider().getPolicy() == HostnameVerificationPolicy.ANY) {
-                props.setProperty("mail.smtp.ssl.trust", "*");
+                props.put("mail.smtp.ssl.trust", "*");
                 checkServerIdentity = false;
             }
         }
