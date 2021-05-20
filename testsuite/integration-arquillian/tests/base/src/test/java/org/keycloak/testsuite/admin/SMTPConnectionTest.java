@@ -145,7 +145,7 @@ public class SMTPConnectionTest extends AbstractKeycloakTest {
     @AuthServerContainerExclude(AuthServer.REMOTE)
     public void testStartTls() throws Exception {
         greenMailRule.credentials("admin@localhost", "admin");
-        Response response = realm.testSMTPConnection(settings("127.0.0.1", "3465", "auto@keycloak.org", "true", "true", "true",
+        Response response = realm.testSMTPConnection(settings("smtp.office365.com", "587", "auto@keycloak.org", "false", "false", "true",
                 "admin@localhost", SMTP_PASSWORD));
         assertStatus(response, 204);
         assertMailReceived();
