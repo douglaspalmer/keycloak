@@ -127,7 +127,13 @@ public class LogoutEndpoint {
                            @QueryParam("post_logout_redirect_uri") String postLogoutRedirectUri,
                            @QueryParam("state") String state,
                            @QueryParam("initiating_idp") String initiatingIdp) {
-        String redirect = postLogoutRedirectUri != null ? postLogoutRedirectUri : redirectUri;
+        // id_token_hint is required with post_logout_redirect_uri
+        if(postLogoutRedirectUri != null && encodedIdToken == null) {
+            event.event(EventType.LOGOUT);
+            event.error(Errors.INVALID_TOKEN);
+            return ErrorPage.error(session, null, Response.Status.BAD_REQUEST, Messages.SESSION_NOT_ACTIVE);
+        }
+
         IDToken idToken = null;
         if (encodedIdToken != null) {
             try {
@@ -140,6 +146,7 @@ public class LogoutEndpoint {
             }
         }
 
+        String redirect = postLogoutRedirectUri != null ? postLogoutRedirectUri : redirectUri;
         if (redirect != null) {
             String validatedUri;
             ClientModel client = (idToken == null || idToken.getIssuedFor() == null) ? null : realm.getClientById(idToken.getIssuedFor());

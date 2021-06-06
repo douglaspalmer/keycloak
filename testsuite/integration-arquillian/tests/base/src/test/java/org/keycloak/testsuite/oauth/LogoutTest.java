@@ -129,7 +129,7 @@ public class LogoutTest extends AbstractKeycloakTest {
 
         events.clear();
 
-        driver.navigate().to(oauth.getLogoutUrl().redirectUri(oauth.APP_AUTH_ROOT).idTokenHint(idToken).build());
+        driver.navigate().to(oauth.getLogoutUrl().postLogoutRedirectUri(oauth.APP_AUTH_ROOT).idTokenHint(idToken).build());
         events.expectLogout(sessionId).detail(Details.REDIRECT_URI, oauth.APP_AUTH_ROOT).assertEvent();
 
         assertCurrentUrlEquals(oauth.APP_AUTH_ROOT);
@@ -145,7 +145,7 @@ public class LogoutTest extends AbstractKeycloakTest {
 
         events.clear();
 
-        driver.navigate().to(oauth.getLogoutUrl().redirectUri(oauth.APP_AUTH_ROOT).idTokenHint(accessToken).build());
+        driver.navigate().to(oauth.getLogoutUrl().postLogoutRedirectUri(oauth.APP_AUTH_ROOT).idTokenHint(accessToken).build());
 
         events.expectLogoutError(OAuthErrorException.INVALID_TOKEN).assertEvent();
     }
