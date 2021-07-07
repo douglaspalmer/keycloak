@@ -172,11 +172,9 @@ public class UserStorageConsentTest extends AbstractServletsAdapterTest {
         consentPage.confirm();
         assertCurrentUrlEquals(productPortal.toString());
         Assert.assertTrue(driver.getPageSource().contains("iPhone"));
-        String logoutUri = OIDCLoginProtocolService.logoutUrl(authServerPage.createUriBuilder())
-                .queryParam(OAuth2Constants.REDIRECT_URI, productPortal.toString())
-                .build("demo").toString();
 
-        driver.navigate().to(logoutUri);
+        testRealmAccountPage.navigateTo();
+        testRealmAccountPage.logOut();
         waitForPageToLoad();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
         productPortal.navigateTo();
@@ -185,7 +183,8 @@ public class UserStorageConsentTest extends AbstractServletsAdapterTest {
         assertCurrentUrlEquals(productPortal.toString());
         Assert.assertTrue(driver.getPageSource().contains("iPhone"));
 
-        driver.navigate().to(logoutUri);
+        testRealmAccountPage.navigateTo();
+        testRealmAccountPage.logOut();
         adminClient.realm("demo").users().delete(uid).close();
     }
 }

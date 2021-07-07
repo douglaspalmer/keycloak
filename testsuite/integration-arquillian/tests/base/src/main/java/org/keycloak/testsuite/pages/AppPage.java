@@ -58,9 +58,7 @@ public class AppPage extends AbstractPage {
     }
 
     public void logout() {
-        String logoutUri = OIDCLoginProtocolService.logoutUrl(UriBuilder.fromUri(oauth.AUTH_SERVER_ROOT))
-                .queryParam(OAuth2Constants.REDIRECT_URI, oauth.APP_AUTH_ROOT).build("test").toString();
-        driver.navigate().to(logoutUri);
+        oauth.openLogout();
     }
 
 }

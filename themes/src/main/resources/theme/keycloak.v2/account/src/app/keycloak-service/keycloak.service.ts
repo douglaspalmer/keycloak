@@ -42,8 +42,8 @@ export class KeycloakService {
         this.keycloakAuth.login(options);
     }
 
-    public logout(redirectUri: string = baseUrl): void {
-        this.keycloakAuth.logout({redirectUri: redirectUri});
+    public logout(postLogoutRedirectUri: string = baseUrl): void {
+        this.keycloakAuth.logout({postLogoutRedirectUri: postLogoutRedirectUri, idTokenHint: this.keycloakAuth.idToken});
     }
 
     public account(): void {

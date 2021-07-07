@@ -125,10 +125,8 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
         loginToTokenMinTtlApp();
 
         // Logout
-        String logoutUri = OIDCLoginProtocolService.logoutUrl(authServerPage.createUriBuilder())
-                .queryParam(OAuth2Constants.REDIRECT_URI, tokenMinTTLPage.toString())
-                .build("demo").toString();
-        driver.navigate().to(logoutUri);
+        testRealmAccountPage.navigateTo();
+        testRealmAccountPage.logOut();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
 
         // Generate new realm key
@@ -142,14 +140,16 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
         URLAssert.assertCurrentUrlStartsWith(tokenMinTTLPage.getInjectedUrl().toString());
         Assert.assertNull(tokenMinTTLPage.getAccessToken());
 
-        driver.navigate().to(logoutUri);
+        testRealmAccountPage.navigateTo();
+        testRealmAccountPage.logOut();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
 
         setAdapterAndServerTimeOffset(300, tokenMinTTLPage.toString() + "/unsecured/foo");
 
         // Try to login. Should work now due to realm key change
         loginToTokenMinTtlApp();
-        driver.navigate().to(logoutUri);
+        testRealmAccountPage.navigateTo();
+        testRealmAccountPage.logOut();
 
         // Revert public keys change
         resetKeycloakDeploymentForAdapter(tokenMinTTLPage.toString() + "/unsecured/foo");
@@ -188,9 +188,8 @@ public class OIDCPublicKeyRotationAdapterTest extends AbstractServletsAdapterTes
         assertTrue(pageSource.contains("Bill Burke") && pageSource.contains("Stian Thorgersen"));
 
         // Logout
-        String logoutUri = OIDCLoginProtocolService.logoutUrl(authServerPage.createUriBuilder())
-                .queryParam(OAuth2Constants.REDIRECT_URI, securePortal.toString()).build("demo").toString();
-        driver.navigate().to(logoutUri);
+        testRealmAccountPage.navigateTo();
+        testRealmAccountPage.logOut();
     }
 
 

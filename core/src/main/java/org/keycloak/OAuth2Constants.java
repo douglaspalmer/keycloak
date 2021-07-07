@@ -36,6 +36,8 @@ public interface OAuth2Constants {
 
     String POST_LOGOUT_REDIRECT_URI = "post_logout_redirect_uri";
 
+    String ID_TOKEN_HINT = "id_token_hint";
+
     String DISPLAY = "display";
 
     String SCOPE = "scope";

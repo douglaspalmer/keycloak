@@ -252,7 +252,8 @@ declare namespace Keycloak {
 		/**
 		 * Specifies the uri to redirect to after logout.
 		 */
-		redirectUri?: string;
+		postLogoutRedirectUri?: string;
+		idTokenHint?: string;
 	}
 
 	interface KeycloakRegisterOptions extends Omit<KeycloakLoginOptions, 'action'> { }

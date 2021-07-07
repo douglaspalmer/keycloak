@@ -70,8 +70,8 @@ public class UrlBean {
         return Urls.accountSessionsPage(baseQueryURI, realm).toString();
     }
 
-    public String getLogoutUrl() {
-        return Urls.accountLogout(baseQueryURI, currentURI, realm).toString();
+    public String getLogoutUrl(String idTokenHint) {
+        return Urls.accountLogout(baseQueryURI, currentURI, realm, idTokenHint).toString();
     }
 
     public String getResourceUrl() {

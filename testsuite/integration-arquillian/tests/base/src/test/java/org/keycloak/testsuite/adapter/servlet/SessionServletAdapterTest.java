@@ -110,9 +110,8 @@ public class SessionServletAdapterTest extends AbstractServletsAdapterTest {
         assertTrue(pageSource.contains("Counter=2"));
 
         // Logout in browser1
-        String logoutUri = OIDCLoginProtocolService.logoutUrl(authServerPage.createUriBuilder())
-                .queryParam(OAuth2Constants.REDIRECT_URI, sessionPortalPage.toString()).build("demo").toString();
-        driver.navigate().to(logoutUri);
+        testRealmAccountPage.navigateTo();
+        testRealmAccountPage.logOut();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage);
 
         // Assert that I am logged out in browser1
@@ -125,7 +124,8 @@ public class SessionServletAdapterTest extends AbstractServletsAdapterTest {
         pageSource = driver2.getPageSource();
         assertThat(pageSource, containsString("Counter=3"));
 
-        driver2.navigate().to(logoutUri);
+        driver2.navigate().to(testRealmAccountPage.toString());
+        driver2.findElement(By.linkText("Sign Out")).click();
         assertCurrentUrlStartsWithLoginUrlOf(testRealmPage, driver2);
 
     }
@@ -150,9 +150,8 @@ public class SessionServletAdapterTest extends AbstractServletsAdapterTest {
         loginAndCheckSession(testRealmLoginPage);
 
         // Logout
-        String logoutUri = OIDCLoginProtocolService.logoutUrl(authServerPage.createUriBuilder())
-                .queryParam(OAuth2Constants.REDIRECT_URI, sessionPortalPage.toString()).build("demo").toString();
-        driver.navigate().to(logoutUri);
+        testRealmAccountPage.navigateTo();
+        testRealmAccountPage.logOut();
 
         // Assert that http session was invalidated
         sessionPortalPage.navigateTo();
@@ -182,9 +181,8 @@ public class SessionServletAdapterTest extends AbstractServletsAdapterTest {
         assertCurrentUrlEquals(sessionPortalPage);
         String pageSource = driver.getPageSource();
         assertTrue(pageSource.contains("Counter=3"));
-        String logoutUri = OIDCLoginProtocolService.logoutUrl(authServerPage.createUriBuilder())
-                .queryParam(OAuth2Constants.REDIRECT_URI, sessionPortalPage.toString()).build("demo").toString();
-        driver.navigate().to(logoutUri);
+        testRealmAccountPage.navigateTo();
+        testRealmAccountPage.logOut();
     }
 
     //KEYCLOAK-1216
