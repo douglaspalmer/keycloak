@@ -114,7 +114,7 @@ public abstract class AbstractTestRealmKeycloakTest extends AbstractKeycloakTest
         Field eventsField = Reflections.findDeclaredField(this.getClass(), "events");
         if (eventsField != null) {
             AssertEvents events = Reflections.getFieldValue(eventsField, this, AssertEvents.class);
-            events.expectCodeToToken(codeId, sessionId).assertEvent();
+            events.expectCodeToToken(codeId, sessionId).user(loginEvent.getUserId()).assertEvent();
         }
 
         return response;

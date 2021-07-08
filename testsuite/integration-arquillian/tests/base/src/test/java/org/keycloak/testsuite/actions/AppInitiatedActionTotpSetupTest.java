@@ -414,7 +414,7 @@ public class AppInitiatedActionTotpSetupTest extends AbstractAppInitiatedActionT
         // Login with one-time password
         loginTotpPage.login(totp.generateTOTP(totpCode));
 
-        loginEvent = events.expectLogin().user(userId).detail(Details.USERNAME, "setupTotp2").assertEvent();
+        events.expectLogin().user(userId).detail(Details.USERNAME, "setupTotp2").assertEvent();
 
         // Open account page
         accountTotpPage.open();
@@ -426,9 +426,8 @@ public class AppInitiatedActionTotpSetupTest extends AbstractAppInitiatedActionT
         events.expectAccount(EventType.REMOVE_TOTP).user(userId).assertEvent();
 
         // Logout
-        tokenResponse = sendTokenRequestAndGetResponse(loginEvent);
-        oauth.idTokenHint(tokenResponse.getIdToken()).openLogout();
-        events.expectLogout(loginEvent.getSessionId()).user(userId).assertEvent();
+        accountTotpPage.logout();
+        events.expectLogout(loginEvent.getSessionId()).user(userId).detail(Details.REDIRECT_URI, "https://localhost:8543/auth/realms/test/account/totp").assertEvent();
 
         // Try to login
         loginPage.open();
@@ -532,7 +531,7 @@ public class AppInitiatedActionTotpSetupTest extends AbstractAppInitiatedActionT
 
         assertKcActionStatus(null);
 
-        events.expectLogin().assertEvent();
+        loginEvent = events.expectLogin().assertEvent();
 
         tokenResponse = sendTokenRequestAndGetResponse(loginEvent);
         oauth.idTokenHint(tokenResponse.getIdToken()).openLogout();

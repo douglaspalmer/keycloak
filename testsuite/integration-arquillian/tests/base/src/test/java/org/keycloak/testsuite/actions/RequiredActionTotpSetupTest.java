@@ -54,6 +54,7 @@ import org.openqa.selenium.By;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -433,9 +434,8 @@ public class RequiredActionTotpSetupTest extends AbstractTestRealmKeycloakTest {
         events.expectAccount(EventType.REMOVE_TOTP).user(userId).assertEvent();
 
         // Logout
-        tokenResponse = sendTokenRequestAndGetResponse(loginEvent);
-        oauth.idTokenHint(tokenResponse.getIdToken()).openLogout();
-        events.expectLogout(loginEvent.getSessionId()).user(userId).assertEvent();
+        accountTotpPage.logout();
+        events.expectLogout(loginEvent.getSessionId()).user(userId).detail(Details.REDIRECT_URI, "https://localhost:8543/auth/realms/test/account/totp").assertEvent();
 
         // Try to login
         loginPage.open();
@@ -550,7 +550,7 @@ public class RequiredActionTotpSetupTest extends AbstractTestRealmKeycloakTest {
 
         assertEquals(RequestType.AUTH_RESPONSE, appPage.getRequestType());
 
-        events.expectLogin().assertEvent();
+        loginEvent = events.expectLogin().assertEvent();
 
         tokenResponse = sendTokenRequestAndGetResponse(loginEvent);
         oauth.idTokenHint(tokenResponse.getIdToken()).openLogout();
