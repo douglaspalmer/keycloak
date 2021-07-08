@@ -33,6 +33,7 @@ import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
 import org.keycloak.testsuite.util.GreenMailRule;
 import org.keycloak.testsuite.util.OAuthClient;
 import org.keycloak.testsuite.util.SecondBrowser;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import java.util.List;
@@ -90,7 +91,8 @@ public class AppInitiatedActionResetPasswordTest extends AbstractAppInitiatedAct
 
         EventRepresentation loginEvent = events.expectLogin().assertEvent();
 
-        oauth.openLogout();
+        accountPage.navigateTo();
+        accountPage.logOut();
 
         events.expectLogout(loginEvent.getSessionId()).assertEvent();
 
