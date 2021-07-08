@@ -117,7 +117,7 @@ public class OIDCProtocolMappersUserProfileTest extends OIDCProtocolMappersTest 
         assertThat(firstName, instanceOf(String.class));
         assertThat(firstName, is("Tom"));
 
-        oauth.openLogout();
+        oauth.idTokenHint(response.getIdToken()).openLogout();
     }
 
     @Test
@@ -134,6 +134,6 @@ public class OIDCProtocolMappersUserProfileTest extends OIDCProtocolMappersTest 
         assertThat(firstName, instanceOf(String.class));
         assertThat(firstName, is("Brady"));
 
-        oauth.openLogout();
+        oauth.idTokenHint(response.getIdToken()).openLogout();
     }
 }

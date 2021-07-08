@@ -87,7 +87,7 @@ public class TokenEndpointCorsTest extends AbstractKeycloakTest {
         oauth.origin(VALID_CORS_URL);
 
         // No session
-        oauth.openLogout();
+        oauth.idTokenHint(response.getIdToken()).openLogout();
         response = oauth.doRefreshTokenRequest(response.getRefreshToken(), null);
         assertEquals(400, response.getStatusCode());
         assertCors(response);

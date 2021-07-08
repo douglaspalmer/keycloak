@@ -248,7 +248,6 @@ public class OAuthClient {
         clientId = "test-app";
         redirectUri = APP_ROOT + "/auth";
         postLogoutRedirectUri = APP_ROOT + "/auth";
-        idTokenHint = "Doug";
         state = () -> {
             return KeycloakModelUtils.generateId();
         };

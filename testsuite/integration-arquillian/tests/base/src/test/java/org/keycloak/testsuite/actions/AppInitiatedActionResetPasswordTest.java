@@ -21,6 +21,7 @@ import org.jboss.arquillian.graphene.page.Page;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.events.EventType;
 import org.keycloak.models.UserModel;
@@ -29,6 +30,7 @@ import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.representations.idm.UserSessionRepresentation;
 import org.keycloak.testsuite.admin.ApiUtil;
+import org.keycloak.testsuite.auth.page.AuthRealm;
 import org.keycloak.testsuite.pages.LoginPasswordUpdatePage;
 import org.keycloak.testsuite.util.GreenMailRule;
 import org.keycloak.testsuite.util.OAuthClient;
@@ -74,6 +76,7 @@ public class AppInitiatedActionResetPasswordTest extends AbstractAppInitiatedAct
     @Test
     public void resetPassword() throws Exception {
         loginPage.open();
+        System.out.println(driver.getPageSource());
         loginPage.login("test-user@localhost", "password");
 
         events.expectLogin().assertEvent();
@@ -91,8 +94,8 @@ public class AppInitiatedActionResetPasswordTest extends AbstractAppInitiatedAct
 
         EventRepresentation loginEvent = events.expectLogin().assertEvent();
 
-        accountPage.navigateTo();
-        accountPage.logOut();
+        OAuthClient.AccessTokenResponse tokenResponse = sendTokenRequestAndGetResponse(loginEvent);
+        oauth.idTokenHint(tokenResponse.getIdToken()).openLogout();
 
         events.expectLogout(loginEvent.getSessionId()).assertEvent();
 

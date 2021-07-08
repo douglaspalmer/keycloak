@@ -282,7 +282,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
             assertThat(jsonClaim.get("c"), instanceOf(Collection.class));
             assertThat(jsonClaim.get("d"), instanceOf(Map.class));
 
-            oauth.openLogout();
+            oauth.idTokenHint(response.getIdToken()).openLogout();
         }
 
         // undo mappers
@@ -321,7 +321,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
             assertNull(idToken.getOtherClaims().get("nested"));
             assertNull(idToken.getOtherClaims().get("department"));
 
-            oauth.openLogout();
+            oauth.idTokenHint(response.getIdToken()).openLogout();
         }
 
 
@@ -354,7 +354,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
             assertNull(nulll);
 
             oauth.verifyToken(response.getAccessToken());
-            oauth.openLogout();
+            oauth.idTokenHint(response.getIdToken()).openLogout();
         }
 
         // undo mappers
@@ -379,7 +379,7 @@ public class OIDCProtocolMappersTest extends AbstractKeycloakTest {
             assertNull(idToken.getOtherClaims().get("empty"));
             assertNull(idToken.getOtherClaims().get("null"));
 
-            oauth.openLogout();
+            oauth.idTokenHint(response.getIdToken()).openLogout();
         }
         events.clear();
     }

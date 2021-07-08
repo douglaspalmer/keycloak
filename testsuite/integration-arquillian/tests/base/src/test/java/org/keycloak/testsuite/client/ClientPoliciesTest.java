@@ -2353,7 +2353,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
         assertEquals(OAuthErrorException.INVALID_GRANT, accessTokenResponse.getError());
 
         // Check frontchannel logout and login.
-        oauth.openLogout();
+        oauth.idTokenHint(accessTokenResponse.getIdToken()).openLogout();
         loginResponse = oauth.doLogin(TEST_USER_NAME, TEST_USER_PASSWORD);
         Assert.assertNull(loginResponse.getError());
 
@@ -2536,7 +2536,7 @@ public class ClientPoliciesTest extends AbstractClientPoliciesTest {
         assertEquals("PKCE code verifier not specified", res.getErrorDescription());
         events.expect(EventType.CODE_TO_TOKEN_ERROR).client(clientId).session(sessionId).clearDetails().error(Errors.CODE_VERIFIER_MISSING).assertEvent();
 
-        oauth.openLogout();
+        oauth.idTokenHint(res.getIdToken()).openLogout();
         events.expectLogout(sessionId).clearDetails().assertEvent();
     }
 

@@ -247,7 +247,7 @@ public class ConcurrentLoginTest extends AbstractConcurrencyTest {
 
             run(DEFAULT_THREADS, DEFAULT_THREADS, codeToTokenTask);
 
-            oauth1.openLogout();
+            oauth1.idTokenHint(resp.getIdToken()).openLogout();
 
             // Code should be successfully exchanged for the token at max once. In some cases (EG. Cross-DC) it may not be even successfully exchanged
             Assert.assertThat(codeToTokenSuccessCount.get(), Matchers.lessThanOrEqualTo(1));

@@ -147,7 +147,8 @@ public class SSOTest extends AbstractTestRealmKeycloakTest {
 
             assertNotEquals(login1.getSessionId(), login2.getSessionId());
 
-            oauth.openLogout();
+            OAuthClient.AccessTokenResponse tokenResponse = sendTokenRequestAndGetResponse(login1);
+            oauth.idTokenHint(tokenResponse.getIdToken()).openLogout();
             events.expectLogout(login1.getSessionId()).assertEvent();
 
             oauth.openLoginForm();
@@ -160,7 +161,8 @@ public class SSOTest extends AbstractTestRealmKeycloakTest {
             Assert.assertEquals(RequestType.AUTH_RESPONSE, RequestType.valueOf(driver2.getTitle()));
             Assert.assertNotNull(oauth2.getCurrentQuery().get(OAuth2Constants.CODE));
 
-            oauth2.openLogout();
+            tokenResponse = sendTokenRequestAndGetResponse(login2);
+            oauth2.idTokenHint(tokenResponse.getIdToken()).openLogout();
             events.expectLogout(login2.getSessionId()).assertEvent();
 
             oauth2.openLoginForm();
