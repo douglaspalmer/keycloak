@@ -206,11 +206,14 @@ public class LDAPProvidersIntegrationTest extends AbstractLDAPTest {
     }
 
     private void loginSuccessAndLogout(String username, String password) {
+        events.clear();
         loginPage.open();
         loginPage.login(username, password);
         Assert.assertEquals(AppPage.RequestType.AUTH_RESPONSE, appPage.getRequestType());
-        Assert.assertNotNull(oauth.getCurrentQuery().get(OAuth2Constants.CODE));
-        oauth.openLogout();
+
+        OAuthClient.AccessTokenResponse tokenResponse = sendTokenRequestAndGetResponse(events.poll());
+        oauth.idTokenHint(tokenResponse.getIdToken()).openLogout();
+        events.poll();
     }
 
     @Test
