@@ -1160,7 +1160,7 @@ public class ResetPasswordTest extends AbstractTestRealmKeycloakTest {
             EventRepresentation loginEvent = resetPasswordTwiceInNewTab(defaultUser, CLIENT_ID, false, REDIRECT_URI);
             assertThat(driver.getCurrentUrl(), Matchers.containsString(REDIRECT_URI));
             OAuthClient.AccessTokenResponse tokenResponse = sendTokenRequestAndGetResponse(loginEvent);
-            oauth.idTokenHint(tokenResponse.getIdToken()).openLogout();
+            oauth.idTokenHint(tokenResponse.getIdToken()).postLogoutRedirectUri(REDIRECT_URI).openLogout();
 
             loginPage.open();
             resetPasswordTwiceInNewTab(defaultUser, CLIENT_ID, true, REDIRECT_URI);
