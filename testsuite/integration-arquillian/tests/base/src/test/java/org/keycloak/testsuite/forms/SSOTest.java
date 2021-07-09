@@ -161,8 +161,10 @@ public class SSOTest extends AbstractTestRealmKeycloakTest {
             Assert.assertEquals(RequestType.AUTH_RESPONSE, RequestType.valueOf(driver2.getTitle()));
             Assert.assertNotNull(oauth2.getCurrentQuery().get(OAuth2Constants.CODE));
 
-            tokenResponse = sendTokenRequestAndGetResponse(login2);
-            oauth2.idTokenHint(tokenResponse.getIdToken()).openLogout();
+            String code = new OAuthClient.AuthorizationEndpointResponse(oauth2).getCode();
+            OAuthClient.AccessTokenResponse response = oauth2.doAccessTokenRequest(code, "password");
+            events.poll();
+            oauth2.idTokenHint(response.getIdToken()).openLogout();
             events.expectLogout(login2.getSessionId()).assertEvent();
 
             oauth2.openLoginForm();
