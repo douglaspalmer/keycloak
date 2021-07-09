@@ -414,7 +414,7 @@ public class AppInitiatedActionTotpSetupTest extends AbstractAppInitiatedActionT
         // Login with one-time password
         loginTotpPage.login(totp.generateTOTP(totpCode));
 
-        events.expectLogin().user(userId).detail(Details.USERNAME, "setupTotp2").assertEvent();
+        loginEvent = events.expectLogin().user(userId).detail(Details.USERNAME, "setupTotp2").assertEvent();
 
         // Open account page
         accountTotpPage.open();
