@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.gargoylesoftware.htmlunit.WebClient;
 import java.io.Closeable;
 import org.hamcrest.CoreMatchers;
+import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.arquillian.drone.webdriver.htmlunit.DroneHtmlUnitDriver;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.Assert;
@@ -62,6 +63,7 @@ import org.keycloak.testsuite.AbstractKeycloakTest;
 import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.admin.ApiUtil;
 import org.keycloak.testsuite.arquillian.undertow.lb.SimpleUndertowLoadBalancer;
+import org.keycloak.testsuite.drone.Different;
 import org.keycloak.testsuite.oidc.AbstractOIDCScopeTest;
 import org.keycloak.testsuite.pages.LoginPage;
 import org.keycloak.testsuite.updaters.ClientAttributeUpdater;
@@ -87,6 +89,8 @@ import jakarta.ws.rs.core.Form;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
+import org.openqa.selenium.WebDriver;
+
 import java.net.URI;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -129,6 +133,10 @@ public class RefreshTokenTest extends AbstractKeycloakTest {
     public void beforeAbstractKeycloakTest() throws Exception {
         super.beforeAbstractKeycloakTest();
     }
+
+    @Drone
+    @Different
+    protected WebDriver driver2;
 
     @Before
     public void clientConfiguration() {
@@ -1626,6 +1634,44 @@ public class RefreshTokenTest extends AbstractKeycloakTest {
             response = oauth.doRefreshTokenRequest(refreshToken, "password");
             assertEquals(200, response.getStatusCode());
             assertExpiration(response.getRefreshExpiresIn(), ssoSessionMaxLifespan - 200);
+        } finally {
+            rep.setSsoSessionMaxLifespan(originalSsoSessionMaxLifespan);
+            rep.setClientSessionMaxLifespan(originalClientSessionMaxLifespan);
+            realm.update(rep);
+            clientRepresentation.getAttributes().put(OIDCConfigAttributes.CLIENT_SESSION_MAX_LIFESPAN, null);
+            client.update(clientRepresentation);
+        }
+    }
+
+    @Test
+    public void testChangingMaxClientSessionLifespan() {
+        ClientResource client = ApiUtil.findClientByClientId(adminClient.realm("test"), "test-app");
+        ClientRepresentation clientRepresentation = client.toRepresentation();
+
+        RealmResource realm = adminClient.realm("test");
+        RealmRepresentation rep = realm.toRepresentation();
+        Integer originalSsoSessionMaxLifespan = rep.getSsoSessionMaxLifespan();
+        Integer originalClientSessionMaxLifespan = rep.getClientSessionMaxLifespan();
+
+        try {
+            oauth.doLogin("test-user@localhost", "password");
+            String code = oauth.getCurrentQuery().get(OAuth2Constants.CODE);
+            OAuthClient.AccessTokenResponse response = oauth.doAccessTokenRequest(code, "password");
+            assertEquals(200, response.getStatusCode());
+            assertTrue(response.getRefreshExpiresIn() > 0);
+
+            rep.setClientSessionMaxLifespan(60);
+            realm.update(rep);
+
+            setTimeOffset(60);
+
+            OAuthClient oauth2 = new OAuthClient();
+            oauth2.init(driver2);
+            oauth2.doLogin("test-user@localhost", "password");
+            code = oauth2.getCurrentQuery().get(OAuth2Constants.CODE);
+            response = oauth2.doAccessTokenRequest(code, "password");
+            assertEquals(200, response.getStatusCode());
+            assertTrue(response.getRefreshExpiresIn() > 0);
         } finally {
             rep.setSsoSessionMaxLifespan(originalSsoSessionMaxLifespan);
             rep.setClientSessionMaxLifespan(originalClientSessionMaxLifespan);
