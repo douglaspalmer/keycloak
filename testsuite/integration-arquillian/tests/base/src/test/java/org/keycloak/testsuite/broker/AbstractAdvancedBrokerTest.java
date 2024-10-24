@@ -572,10 +572,12 @@ public abstract class AbstractAdvancedBrokerTest extends AbstractBrokerTest {
             // Login for 2 times with incorrect TOTP. This should temporarily disable the user
             loginTotpPage.login("bad-totp");
             Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+            WaitUtils.pause(1000);
             WaitUtils.waitForExecutors(testingClient, numExecutors+1);
             numExecutors = WaitUtils.getNumExecutors(testingClient);
             loginTotpPage.login("bad-totp");
             Assert.assertEquals("Invalid authenticator code.", loginTotpPage.getInputError());
+            WaitUtils.pause(1000);
             WaitUtils.waitForExecutors(testingClient, numExecutors+1);
 
             bruteForceStatus = realm.attackDetection().bruteForceUserStatus(user.getId());
