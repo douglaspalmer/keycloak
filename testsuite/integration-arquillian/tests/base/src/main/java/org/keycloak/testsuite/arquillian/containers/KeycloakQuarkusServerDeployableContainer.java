@@ -78,7 +78,11 @@ public class KeycloakQuarkusServerDeployableContainer extends AbstractQuarkusDep
             try {
                 destroyDescendantsOnWindows(container, false);
                 container.destroy();
-                container.waitFor(10, TimeUnit.SECONDS);
+                boolean terminated = container.waitFor(10, TimeUnit.SECONDS);
+                if(!terminated) {
+                    destroyDescendantsOnWindows(container, true);
+                    container.destroyForcibly();
+                }
             } catch (InterruptedException e) {
                 destroyDescendantsOnWindows(container, true);
                 container.destroyForcibly();
