@@ -786,6 +786,10 @@ jobs:
     timeout-minutes: 35
     env:
       MAVEN_OPTS: -Xmx1536m
+    strategy:
+      matrix:
+        version: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+        multiplier: [1,2,3,4,5,6,7,8]
     steps:
       - uses: actions/checkout@v4
 
@@ -795,7 +799,7 @@ jobs:
 
       - name: Run cluster tests
         run: |
-          ./mvnw test ${{ env.SUREFIRE_RETRY }} -Pauth-server-cluster-quarkus,db-postgres "-Dwebdriver.chrome.driver=$CHROMEWEBDRIVER/chromedriver" -Dsession.cache.owners=2 -Dtest=**.cluster.** -pl testsuite/integration-arquillian/tests/base 2>&1 | misc/log/trimmer.sh
+          ./mvnw test -Pauth-server-cluster-quarkus,db-postgres "-Dwebdriver.chrome.driver=$CHROMEWEBDRIVER/chromedriver" -Dsession.cache.owners=2 -Dtest=**.cluster.** -pl testsuite/integration-arquillian/tests/base 2>&1 | misc/log/trimmer.sh
 
       - name: Upload JVM Heapdumps
         if: always()
