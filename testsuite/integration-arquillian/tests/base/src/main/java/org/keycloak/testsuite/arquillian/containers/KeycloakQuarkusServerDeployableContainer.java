@@ -67,6 +67,9 @@ public class KeycloakQuarkusServerDeployableContainer extends AbstractQuarkusDep
                     throw e;
                 }
             }
+            if(!logProcessor.getBufferedLog().matches("(?s).*Keycloak.*on JVM.*started in.*")) {
+                throw new Exception("Readiness reported before Keycloak started log message.");
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
