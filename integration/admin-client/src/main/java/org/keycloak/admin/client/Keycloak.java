@@ -173,6 +173,9 @@ public class Keycloak implements AutoCloseable {
      */
     @Override
     public void close() {
+        if(tokenManager != null) {
+            tokenManager.logout();
+        }
         closed = true;
         client.close();
     }

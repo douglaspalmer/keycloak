@@ -561,6 +561,17 @@ public class RealmTest extends AbstractAdminTest {
 
         reCreateRealm();
     }
+    
+    @Test
+    public void sessionClosedOnKeycloakClose() {
+        String token;
+        try (Keycloak client = Keycloak.getInstance(getAuthServerContextRoot() + "/auth", "master", "admin", "admin", Constants.ADMIN_CLI_CLIENT_ID, TLSUtils.initializeTLS())) {
+            token = client.tokenManager().getAccessToken().getRefreshToken();
+        }
+        AccessTokenResponse response = oauth.doRefreshTokenRequest(token, "admin");
+        assertEquals(401, response.getStatusCode());
+        assertEquals("unauthorized_client", response.getError());
+    }
 
     /**
      * KEYCLOAK-1990 1991
