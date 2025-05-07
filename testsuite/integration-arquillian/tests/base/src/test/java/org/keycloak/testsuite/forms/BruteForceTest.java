@@ -16,6 +16,9 @@
  */
 package org.keycloak.testsuite.forms;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.hamcrest.MatcherAssert;
 import org.jboss.arquillian.graphene.page.Page;
 import org.junit.After;
@@ -23,6 +26,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.keycloak.broker.provider.util.SimpleHttp;
 import org.keycloak.events.Details;
 import org.keycloak.events.Errors;
 import org.keycloak.events.EventType;
@@ -38,6 +42,7 @@ import org.keycloak.services.managers.BruteForceProtector;
 import org.keycloak.testsuite.AbstractChangeImportedUserPasswordsTest;
 import org.keycloak.testsuite.AssertEvents;
 import org.keycloak.testsuite.AssertEvents.ExpectedEvent;
+import org.keycloak.testsuite.broker.util.SimpleHttpDefault;
 import org.keycloak.testsuite.pages.AppPage;
 import org.keycloak.testsuite.pages.AppPage.RequestType;
 import org.keycloak.testsuite.pages.LoginPage;
@@ -103,6 +108,8 @@ public class BruteForceTest extends AbstractChangeImportedUserPasswordsTest {
 
     private static final Integer failureFactor = 2;
 
+    protected CloseableHttpClient httpClient;
+    
     @Override
     public void configureTestRealm(RealmRepresentation testRealm) {
         super.configureTestRealm(testRealm);
@@ -167,6 +174,7 @@ public class BruteForceTest extends AbstractChangeImportedUserPasswordsTest {
     @Before
     public void before() throws MalformedURLException {
         totp = new TimeBasedOTP();
+        httpClient = HttpClientBuilder.create().build();
     }
 
     public String getAdminToken() throws Exception {
@@ -538,6 +546,26 @@ public class BruteForceTest extends AbstractChangeImportedUserPasswordsTest {
         loginInvalidPassword("user2");
         expectTemporarilyDisabled("user2", userId);
         clearAllUserFailures();
+    }
+    
+    @Test
+    public void testUserResourceUserDisabled() throws Exception {
+        String userId = adminClient.realm("test").users().search("test-user@localhost", null, null, null, 0, 1).get(0).getId();
+
+        loginInvalidPassword();
+        loginInvalidPassword();
+        expectTemporarilyDisabled();
+
+        String urlA = suiteContext.getAuthServerInfo().getContextRoot().toString() + "/auth/admin/realms/test/users/" + userId;
+        SimpleHttp a = SimpleHttpDefault.doGet(urlA, httpClient).auth(getAdminToken());
+
+        String urlB = suiteContext.getAuthServerInfo().getContextRoot().toString() + "/auth/admin/realms/test/users?username=test-user@localhost";
+        SimpleHttp b = SimpleHttpDefault.doGet(urlB, httpClient).auth(getAdminToken());
+
+        UserRepresentation user = a.asJson(UserRepresentation.class);
+        assertFalse(user.isEnabled());
+        user = b.asJson(new TypeReference<List<UserRepresentation>>() {}).get(0);
+        assertFalse(user.isEnabled());
     }
 
     @Test
