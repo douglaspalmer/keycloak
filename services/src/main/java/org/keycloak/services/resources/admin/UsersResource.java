@@ -508,9 +508,6 @@ public class UsersResource {
                             ? ModelToRepresentation.toBriefRepresentation(user)
                             : ModelToRepresentation.toRepresentation(session, realm, user);
                     userRep.setAccess(usersEvaluator.getAccessForListing(user));
-                    if (bruteForceProtector.isTemporarilyDisabled(session, realm, user)) {
-                        userRep.setEnabled(false);
-                    }
                     return userRep;
                 });
     }
